@@ -15,7 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from .views import ProductListCreateAPIView, ProductRetrieveUpdateDestroyAPIView, LabelListCreateAPIView, LabelRetrieveUpdateDestroyAPIView, CartListView, CartDetailView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('products/', ProductListCreateAPIView.as_view(), name='product-list-create'),
+    path('products/<pk>', ProductRetrieveUpdateDestroyAPIView.as_view(), name='product-retrieve-update-destroy'),
+    path('labels/', LabelListCreateAPIView.as_view(), name='label-list-create'),
+    path('labels/<pk>', LabelRetrieveUpdateDestroyAPIView.as_view(), name='label-retrieve-update-destroy'),
+    path('carts/', CartListView.as_view(), name='cart-list'),
+    path('carts/<pk>', CartDetailView.as_view(), name='cart-detail')
 ]
