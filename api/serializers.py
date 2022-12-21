@@ -1,19 +1,19 @@
 from rest_framework import serializers
 from .models import Product, Label, Cart
 
-class ProductSerializer(serializers.ModelSerializer):
-    labels = serializers.StringRelatedField(many=True)
-    class Meta:
-        model = Product
-        fields = ('id', 'name', 'category', 'labels', 'quantity', 'price')
-
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label
-        fields = ('id', 'name')
+        fields = ['id', 'name']
+
+class ProductSerializer(serializers.ModelSerializer):
+    labels = LabelSerializer(many=True)
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'category', 'labels', 'quantity', 'price']
 
 class CartSerializer(serializers.ModelSerializer):
     product = ProductSerializer()
     class Meta:
         model = Cart
-        fields = ('id', 'product', 'quantity')
+        fields = ['id', 'product', 'quantity']
