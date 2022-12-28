@@ -1,8 +1,11 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, status
-from rest_framework.response import Response
 from .serializers import ProductSerializer, CartSerializer, LabelSerializer
 from .models import Product, Cart, Label
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from rest_framework import generics
+from rest_framework import status
+from rest_framework.response import Response
 
 
 # Create your views here.
@@ -11,43 +14,36 @@ from .models import Product, Cart, Label
 class ProductListView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
+    
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-
+    
     def get_object(self):
-        return get_object_or_404(Product, pk=self.kwargs.get('pk'))
-
+        obj = get_object_or_404(self.get_queryset(), pk=self.kwargs['pk'])
+        return obj
+    
+@method_decorator(csrf_exempt, name='dispatch')
 class AddToCartView(generics.CreateAPIView):
-    queryset = Cart.objects.all()
     serializer_class = CartSerializer
-
-    def post(self, request, *args, **kwargs):
+    
+    def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+@method_decorator(csrf_exempt, name='dispatch')
 class PurchaseView(generics.CreateAPIView):
-    queryset = Cart.objects.all()
     serializer_class = CartSerializer
-
-    def post(self, request, *args, **kwargs):
+    
+    def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
 
 
     
